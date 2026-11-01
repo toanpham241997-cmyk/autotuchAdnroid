@@ -1,67 +1,67 @@
 name: Build Android APK
-
 on:
   workflow_dispatch:
   push:
     branches: [main, master]
   pull_request:
     branches: [main, master]
-
 permissions:
   contents: read
-
 concurrency:
   group: android-apk-${{ github.ref }}
   cancel-in-progress: true
-
 jobs:
   build:
     name: Test and build installable APK
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
-      - name: Check out source
-        uses: actions/checkout@v4
-
-      - name: Set up Java 17
-        uses: actions/setup-java@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
-
-      - name: Set up Gradle 8.9
-        uses: gradle/actions/setup-gradle@v4
+      - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
-
       - name: Install Android SDK packages
         run: '"$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-35" "build-tools;34.0.0" "build-tools;35.0.0"'
-
       - name: Check source structure
         run: python3 verify_source.py
-
-      - name: Run unit tests and Android lint, then build APK
-        run: gradle --no-daemon --console=plain testDebugUnitTest lintDebug assembleDebug
-
-      - name: Package APK and checksum
+      - name: Unit tests
+        run: gradle --no-daemon --console=plain testDebugUnitTest
+      - name: Android lint
+        run: gradle --no-daemon --console=plain lintDebug
+      - name: Print complete lint report
+        if: always()
         shell: python
         run: |
-          import hashlib
-          import os
-          import pathlib
-          import shutil
-          source = pathlib.Path("app/build/outputs/apk/debug/app-debug.apk")
-          if not source.is_file():
-              raise SystemExit("APK missing; build is not complete")
-          output = pathlib.Path("output")
-          output.mkdir(exist_ok=True)
-          apk = output / "HuanAssist-debug.apk"
-          shutil.copy2(source, apk)
-          digest = hashlib.sha256(apk.read_bytes()).hexdigest()
-          (output / "SHA256SUMS.txt").write_text(f"{digest}  {apk.name}\n", encoding="utf-8")
-          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as summary:
-              summary.write("## APK ready\nDownload **HuanAssist-APK** under Artifacts, extract it, and install `HuanAssist-debug.apk`.\n\nDefault key: `havanhuan`. This is a debug-signed test build; on-device testing is still required.\n")
-
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+          reports = list(Path('app/build').rglob('lint-results-debug.txt'))
+          if reports:
+              print(reports[0].read_text(encoding='utf-8'))
+          else:
+              xml_reports = list(Path('app/build').rglob('lint-results-debug.xml'))
+              if not xml_reports:
+                  print('No lint report: inspect the preceding failed step.')
+              for report in xml_reports[:1]:
+                  for issue in ET.parse(report).getroot().findall('issue'):
+                      print(issue.attrib)
+                      for location in issue.findall('location'):
+                          print(location.attrib)
+      - name: Build APK after checks pass
+        run: gradle --no-daemon --console=plain assembleDebug
+      - name: Package APK
+        shell: python
+        run: |
+          from pathlib import Path
+          import shutil, hashlib
+          out = Path('output')
+          out.mkdir(exist_ok=True)
+          apk = out / 'HuanAssist-debug.apk'
+          shutil.copy2('app/build/outputs/apk/debug/app-debug.apk', apk)
+          (out / 'SHA256SUMS.txt').write_text(hashlib.sha256(apk.read_bytes()).hexdigest() + '  ' + apk.name + '\n')
       - name: Upload installable APK
         uses: actions/upload-artifact@v4
         with:
@@ -69,7 +69,6 @@ jobs:
           path: output/
           if-no-files-found: error
           retention-days: 14
-
       - name: Upload test and lint reports
         if: always()
         uses: actions/upload-artifact@v4
@@ -78,5 +77,6 @@ jobs:
           path: |
             app/build/reports/
             app/build/test-results/
+            app/build/intermediates/lint_intermediate_text_report/
           if-no-files-found: ignore
           retention-days: 14
