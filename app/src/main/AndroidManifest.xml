@@ -1,16 +1,36 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
- <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
- <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
- <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"/>
- <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION"/>
- <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
- <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS"/>
- <application android:theme="@style/AppTheme" android:label="Huan Assist" android:icon="@drawable/ic_app" android:allowBackup="false" android:supportsRtl="true">
-  <activity android:name=".MainActivity" android:exported="true" android:excludeFromRecents="true">
-   <intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter>
-  </activity>
-  <service android:name=".OverlayService" android:exported="false" android:foregroundServiceType="specialUse|mediaProjection">
-   <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE" android:value="User-initiated floating assistive controls and device telemetry"/>
-  </service>
- </application>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- UsageStatsManager requires this declaration. Access is granted by the user
+         in ACTION_USAGE_ACCESS_SETTINGS and checked via AppOpsManager before queries.
+         This app-op permission is not requested as a normal runtime permission.
+         https://developer.android.com/reference/android/app/usage/UsageStatsManager -->
+    <uses-permission
+        android:name="android.permission.PACKAGE_USAGE_STATS"
+        tools:ignore="ProtectedPermissions" />
+    <application
+        android:theme="@style/AppTheme"
+        android:label="Huan Assist"
+        android:icon="@drawable/ic_app"
+        android:allowBackup="false"
+        android:supportsRtl="true">
+        <activity android:name=".MainActivity"
+            android:exported="true"
+            android:excludeFromRecents="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <service android:name=".OverlayService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse|mediaProjection">
+            <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="User-initiated floating assistive controls and device telemetry" />
+        </service>
+    </application>
 </manifest>
