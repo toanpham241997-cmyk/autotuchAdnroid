@@ -19,12 +19,29 @@ public class MainActivity extends Activity {
             startActivityForResult(consent, 42);
             return;
         }
-        LinearLayout box = Ui.column(this); box.setPadding(Ui.dp(this,28),Ui.dp(this,60),Ui.dp(this,28),24);
-        box.addView(Ui.text(this,"HUAN / ASSIST",14,Ui.ACCENT));
-        box.addView(Ui.text(this,"Điều khiển ngay trên màn hình",30,Ui.WHITE));
-        box.addView(Ui.text(this,"Cấp quyền hiển thị trên ứng dụng khác. Sau đó cửa sổ nhập key sẽ xuất hiện trên màn hình chính.",16,Ui.MUTED));
-        box.addView(Ui.button(this,"Cấp quyền & mở Assist",v -> enable()));
-        setContentView(box);
+        ScrollView scroll=new ScrollView(this);scroll.setFillViewport(true);
+        scroll.setBackground(Ui.surface(0xff090e1c,0));
+        scroll.setOnApplyWindowInsetsListener((v,insets)->{
+            v.setPadding(insets.getSystemWindowInsetLeft(),insets.getSystemWindowInsetTop(),insets.getSystemWindowInsetRight(),insets.getSystemWindowInsetBottom());return insets;
+        });
+        LinearLayout page=Ui.column(this);page.setGravity(android.view.Gravity.CENTER);
+        page.setPadding(Ui.dp(this,20),Ui.dp(this,28),Ui.dp(this,20),Ui.dp(this,28));
+        LinearLayout box=Ui.column(this);box.setPadding(Ui.dp(this,24),Ui.dp(this,24),Ui.dp(this,24),Ui.dp(this,24));
+        box.setBackground(Ui.surface(Ui.BG,Ui.dp(this,24)));
+        box.addView(Ui.badge(this,"HUAN / NEON",Ui.ACCENT));
+        Ui.Glyph hero=new Ui.Glyph(this,"orb");hero.setImportantForAccessibility(android.view.View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+        LinearLayout.LayoutParams heroSize=new LinearLayout.LayoutParams(Ui.dp(this,80),Ui.dp(this,80));heroSize.topMargin=Ui.dp(this,20);box.addView(hero,heroSize);
+        box.addView(Ui.text(this,"Không gian\ncủa bạn.",32,Ui.WHITE));
+        box.addView(Ui.text(this,"Một chạm để mở bộ công cụ trên màn hình.",16,Ui.MUTED));
+        LinearLayout info=Ui.column(this);info.setBackground(Ui.surface(0xff142437,Ui.dp(this,16)));
+        info.addView(Ui.text(this,"01  Cho phép hiển thị nổi",14,Ui.ACCENT));
+        info.addView(Ui.text(this,"02  Nhập key trên màn hình chính",14,Ui.WHITE));
+        info.addView(Ui.text(this,"03  Mở menu và chọn công cụ",14,Ui.WHITE));
+        LinearLayout.LayoutParams infoSize=new LinearLayout.LayoutParams(-1,-2);infoSize.setMargins(0,Ui.dp(this,16),0,Ui.dp(this,16));box.addView(info,infoSize);
+        box.addView(Ui.primary(this,"Cấp quyền & bắt đầu",v->enable()));
+        box.addView(Ui.text(this,"Bạn có thể dừng Assist bất cứ lúc nào từ menu hoặc thông báo.",12,Ui.MUTED));
+        int width=Math.min(Ui.dp(this,420),getResources().getDisplayMetrics().widthPixels-Ui.dp(this,40));
+        page.addView(box,new LinearLayout.LayoutParams(width,-2));scroll.addView(page);setContentView(scroll);Ui.enter(box,false);
         if (Settings.canDrawOverlays(this)) enable();
     }
     private void enable() {

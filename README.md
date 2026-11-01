@@ -1,8 +1,10 @@
-# Huan Assist — Android
+# Huan Assist Neon 1.1.0
 
-Dự án Android native Java, giao diện tiếng Việt theo ba ảnh tham khảo. Android 8.0 trở lên. Key hiện tại: `havanhuan`.
+**Đây là FULL SOURCE**, nâng cấp từ ZIP autotuchAdnroid-main người dùng gửi. Gồm toàn bộ app, tài nguyên, unit test và workflow GitHub Actions. Key hiện tại: `havanhuan`.
 
-**Trạng thái bàn giao:** đã tạo mã nguồn và script build tại máy; chưa biên dịch APK, chưa chạy kiểm thử JUnit/lint hoặc kiểm thử điện thoại. Máy phiên làm việc không có JDK/Android SDK; kết nối tải công cụ bị từ chối. Không có APK trong gói này. Không tuyên bố ứng dụng không có lỗi.
+Giao diện mới: nền navy tối, cyan/tím neon, menu 2 cột, đăng nhập có hiện/ẩn key, nút chính gradient, header với nút đóng cố định, thẻ telemetry, preview tâm ảo và hiệu ứng mở/đóng có hỗ trợ giảm chuyển động hệ thống. Chi tiết: `NEON-CHANGES.md`.
+
+**Kiểm tra trong phiên:** XML, cấu trúc nguồn, hồi quy 3 lỗi Lint đã biết và tính toàn vẹn ZIP. Máy hiện không có JDK/Android SDK nên chưa biên dịch hoặc chạy Android Lint cho bản nâng cấp này. Chưa kiểm tra hình ảnh trên thiết bị Android. Workflow vẫn chạy unit test và lint trước khi xuất APK.
 
 ## Build bằng GitHub Actions
 
@@ -12,7 +14,7 @@ Workflow chạy khi push lên `main`/`master`, khi mở pull request hoặc khi 
 
 Khi workflow xanh: mở lần chạy → **Artifacts → HuanAssist-APK**, tải ZIP, giải nén lấy `HuanAssist-debug.apk`. Gói có SHA256SUMS.txt. Báo cáo lỗi/kiểm thử nằm trong Android-check-reports. Artifact được giữ 14 ngày. Không cần cung cấp keystore hoặc token trong mã nguồn để tạo bản debug.
 
-**Trạng thái:** mới chuẩn bị workflow; chưa chạy GitHub Actions do chưa có kết nối tài khoản và repository đích. Chưa có APK để tải. Build xanh cũng không thay thế kiểm thử thực tế trên điện thoại.
+Upload nội dung ZIP vào gốc repository rồi commit mới để build đúng bản Neon. Build xanh không thay thế kiểm thử thực tế trên điện thoại.
 
 ## Build trực tiếp tại máy
 
